@@ -38,6 +38,9 @@ No hay que compilar nada: son HTML, CSS y JavaScript normales.
 index.html                 Portada, panel, cámara, diálogos y controles
 manifest.json              Datos de instalación de la PWA
 sw.js                      Service worker: app y datos disponibles sin conexión
+og-image.png               Tarjeta 1200×630 para previsualizar el enlace al compartirlo
+robots.txt, sitemap.xml    Indexación
+.nojekyll                  Evita el procesado Jekyll de GitHub Pages
 icon.png                   Icono suelto
 icons/                     Iconos 180/192/512 y maskable
 styles/base.css            Variables, tipografía, botones y utilidades
@@ -85,6 +88,24 @@ El archivo `.nojekyll` está incluido para que GitHub no procese los archivos co
 
 > Para probar en el móvil con cámara hace falta HTTPS (o `localhost`), por eso GitHub
 > Pages es la forma más sencilla.
+
+---
+
+## Rendimiento
+
+GitHub Pages sirve todo con gzip, así que la primera carga es de **~1,23 MB**:
+
+| Recurso | gzip |
+|---|---|
+| `data/pueblos.js` | 1.181 KB |
+| `scripts/app.js` | 36 KB |
+| CSS (4 hojas) | 8 KB |
+| `index.html` | 6 KB |
+
+Las coordenadas de `data/` van redondeadas a 5 decimales (~1 m de error máximo, medido
+0,6 m), lo que ahorra ~340 KB sin cambiar ninguna entrada ni ningún nombre. `picos.js`
+(656 KB gzip) solo se descarga al pulsar **Picos**. Desde la segunda visita todo sale de
+la caché del service worker, sin red.
 
 ---
 

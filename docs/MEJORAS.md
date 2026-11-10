@@ -83,22 +83,49 @@ solo lo imprescindible.
 
 ## 3. Qué se ha modificado en este repositorio
 
-- `index.html`: versión limpia y modular (sin CSS ni JS en línea).
+- `index.html`: versión limpia y modular (sin CSS ni JS en línea), con metadatos de
+  compartida (`og:*`, `twitter:*`), `canonical`, `robots`, `preconnect` a Open-Meteo y
+  `preload` de `data/pueblos.js`.
 - `styles/`: cuatro hojas coherentes (`base`, `portada`, `layout`, `camera`).
 - `scripts/app.js`: motor completo como script clásico (compatible con `file://`).
-- `data/`: localidades y picos extraídos del bloque embebido.
+- `data/`: localidades y picos extraídos del bloque embebido, con las coordenadas
+  redondeadas a 5 decimales (ver 3.1).
 - `manifest.json`, `sw.js`, `icons/`, `icon.png`: PWA e instalación.
+- `og-image.png`: tarjeta 1200×630 para previsualizaciones al compartir el enlace.
+- `robots.txt`, `sitemap.xml`, `.nojekyll`: publicación e indexación.
 - `README.md` y este documento.
 
 El `index.html` original de 707 líneas se conserva **fuera del repositorio**, en la
 carpeta de copia de seguridad `Pueblos_backup/`, por si hay que comparar o revertir.
 
+### 3.1 Peso de la primera carga (medido sobre GitHub Pages, gzip)
+
+GitHub Pages ya sirve los archivos con gzip, así que minificar «a mano» apenas aporta:
+lo que cuesta son los dígitos de las coordenadas, que no se comprimen.
+
+| Recurso | Antes | Ahora | gzip ahora |
+|---|---|---|---|
+| `data/pueblos.js` | 4.141 KB | 3.740 KB | **1.181 KB** (antes 1.414 KB) |
+| `data/picos.js` (bajo demanda) | 1.818 KB | 1.641 KB | **656 KB** (antes 760 KB) |
+| `scripts/app.js` | 102 KB | 102 KB | 36 KB |
+| CSS (4 hojas) | 33 KB | 33 KB | 8 KB |
+| `index.html` | 22 KB | 23 KB | 6 KB |
+
+Redondear las coordenadas a 5 decimales son ~1,1 m de error máximo real (medido:
+0,56 m en latitud y 0,41 m en longitud), muy por debajo del error de la brújula
+(grados, cientos de metros a varios km). Se verificó que **no se pierde ninguna
+entrada**: 97.129 localidades y 42.920 picos antes y después, con los mismos nombres.
+
+Primera carga total: **~1,23 MB gzip** (antes ~1,46 MB).
+
 ---
 
 ## 4. Pendiente / posibles mejoras futuras
 
-- Minificar `pueblos.js` / `picos.js` (reduciría bastante el primer arranque).
 - Empaquetar los datos en binario + `DecompressionStream` (el motor ya soporta
-  `#datosRelieve`).
-- Tests automáticos del cálculo de rumbo/visibilidad (hoy se han probado a mano).
-- Sustituir el `alert`/textos de error por mensajes en línea (parcialmente hecho).
+  `#datosRelieve`); bajaría el HTML a unas decenas de KB.
+- Codificar los pueblos por delta de coordenadas en rejilla (más ganancia que minificar).
+- Tests automáticos del cálculo de rumbo y visibilidad (hoy se comprueban a mano,
+  incluida una carga real en Chrome sin interfaz).
+- Añadir `screenshots` al manifiesto para la ficha de instalación en Android.
+

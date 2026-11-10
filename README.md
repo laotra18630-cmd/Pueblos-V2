@@ -109,6 +109,29 @@ la caché del service worker, sin red.
 
 ---
 
+## Precisión
+
+Tres cosas deciden qué sale bajo la mira, y las tres se pueden medir:
+
+| Pieza | Antes | Ahora |
+|---|---|---|
+| Suavizado del rumbo | media móvil fija (α 0,2): 0,68° de temblor parado y **5,8° de retraso a 90°/s** | filtro One-Euro (1,5 Hz + 0,10·velocidad): **0,11°** y **1,5°** |
+| Margen de la mira | 3° fijos | **1,5–3°** según el error que declara la brújula (`webkitCompassAccuracy`) |
+| Orden de candidatos | ángulo + 0,04° por km (podía ganar el de al lado) | **solo ángulo**; la distancia desempata dentro de 0,25° |
+| Picos | ±3° en horizontal, gana el más alto | **campo vertical real** (altura aparente con curvatura) y gana el más centrado en pantalla |
+
+El filtro One-Euro sube su frecuencia de corte cuando detecta giro de verdad y la baja
+cuando estás parado; además descarta un salto aislado de más de 15° salvo que la muestra
+siguiente lo confirme, así una interferencia magnética no arrastra el rumbo. Los valores
+están medidos con `tests/rumbo.js`, que extrae el `setH()` y el `picoMira()` reales de
+`scripts/app.js` y los ejecuta con un sensor simulado.
+
+Lo que **no** se puede arreglar solo con el rumbo: dos pueblos exactamente en la misma
+línea de visión (uno a 20 km y otro a 40 km) son indistinguibles por ángulo. Para eso hace
+falta la vertical (altura aparente) o que el relieve ocluya uno de los dos.
+
+---
+
 ## Relieve y límites de Open-Meteo
 
 El relieve se consulta a **Open-Meteo** (`api.open-meteo.com/v1/elevation`), el único
@@ -130,16 +153,23 @@ Open-Meteo es gratuito para uso no comercial. Límites por IP: 600 peticiones/mi
 
 ## Pruebas
 
-Dos niveles, ninguno necesita instalar dependencias para el primero:
+Tres niveles. Los dos primeros no necesitan instalar nada:
 
 ```powershell
 node tests/estatico.js
+node tests/rumbo.js
 ```
 
-Comprueba el manifiesto, que todas las referencias locales existan, que no haya ids
-duplicados ni CSS/JS en línea, que el service worker solo precargue archivos reales y que
-los datos conserven el formato y el número de entradas. Se ejecuta también en cada push
-(`.github/workflows/validar.yml`).
+`estatico.js` comprueba el manifiesto, que todas las referencias locales existan, que no
+haya ids duplicados ni CSS/JS en línea, que el service worker solo precargue archivos
+reales y que los datos conserven el formato y el número de entradas.
+
+`rumbo.js` extrae `setH()`, `tolMira()`, `cmpMira()` y `picoMira()` del propio
+`scripts/app.js` y los ejecuta con un sensor simulado: ruido, giros, picos de
+interferencia, huecos de eventos, cruce del norte, tolerancias y el caso de una cumbre
+cercana muy alta frente a otra lejana en la mira.
+
+Los dos se ejecutan en cada push (`.github/workflows/validar.yml`).
 
 ```powershell
 npm install puppeteer-core

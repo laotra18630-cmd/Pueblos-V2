@@ -18,6 +18,16 @@ function fusionar(det,base){
   return det.concat(base.filter(function(b){return !(idx[b[0]]||[]).some(function(o){return Math.abs(o[1]-b[1])<0.045&&Math.abs(o[2]-b[2])<0.06})}));
 }
 var TOL=3,pos=null,ultimaPos=null,hd=0,sm=null;
+// Margen angular de la mira. Si la brujula declara su error (webkitCompassAccuracy,
+// en grados) se ajusta a el; si no, se queda en 3°, el margen de siempre.
+function tolMira(){
+  if(typeof prec!=="number"||!isFinite(prec)||prec<0||prec>25)return TOL;
+  return Math.max(1.5,Math.min(TOL,1+0.25*prec));
+}
+// Orden de los candidatos de la mira: manda el angulo. La distancia solo desempata
+// dentro del mismo cuarto de grado, para que un pueblo lejano a 0,2° gane a uno
+// cercano a 0,3° (antes se sumaba 0,04° por km y ganaba siempre el de al lado).
+function cmpMira(a,b){var ca=Math.round(a.d*4),cb=Math.round(b.d*4);return (ca-cb)||(a.k-b.k)}
 // Índice espacial: cuadrícula de 0,1° que se recalcula solo cuando P cambia de lista
 var GRID=0.1,gridP=null,gridM=null;
 function gridKey(i,j){return i*4000+j}
@@ -211,7 +221,7 @@ function contarPueblos(pe,hdc,km,soloDir){
     if(Math.abs(p[1]-pe.latitude)>=dLa||Math.abs(p[2]-pe.longitude)>=dLo)continue;
     k=dst(pe.latitude,pe.longitude,p[1],p[2]);
     if(k<=0.5||k>km)continue;
-    if(soloDir&&dif(brg(pe.latitude,pe.longitude,p[1],p[2]),hdc)>TOL)continue;
+    if(soloDir&&dif(brg(pe.latitude,pe.longitude,p[1],p[2]),hdc)>tolMira())continue;
     n++;
   }
   return n;
@@ -279,12 +289,13 @@ function pintarYa(){
   else if(oriN===0&&oriT0&&Date.now()-oriT0>4000)av.unshift("⚠ No llegan datos de la brújula. Comprueba que el móvil tiene brújula y que el navegador tiene permiso.");
   if(camErr)av.unshift("📷 "+camErr);
   $("brj").textContent=av.join(" ");
-  var r=[],vis=null,pend=false,i,fuera=(pit<-40||pit>30);
+  var r=[],vis=null,pend=false,i,fuera=(pit<-40||pit>(verPicos?55:30));
   if(!fuera&&!verPicos){
     // Prefiltro rápido por recuadro (la base local puede tener decenas de miles de localidades y esto corre 10 veces/s)
-    var dmax=alcance,dLa=dmax/111,dLo=dmax/(111*Math.max(0.2,Math.cos(pe.latitude*R)));
+    var dmax=alcance,dLa=dmax/111,dLo=dmax/(111*Math.max(0.2,Math.cos(pe.latitude*R))),tol=tolMira();
     r=enRecuadro(pe.latitude,pe.longitude,dLa,dLo).filter(function(p){return Math.abs(p[1]-pe.latitude)<dLa&&Math.abs(p[2]-pe.longitude)<dLo}).map(function(p){return{t:p[3]||"city",n:p[0],la:p[1],lo:p[2],d:dif(brg(pe.latitude,pe.longitude,p[1],p[2]),hdc),k:dst(pe.latitude,pe.longitude,p[1],p[2])}})
-      .filter(function(p){return p.d<=TOL&&p.k>0.5&&p.k<=alcance&&(verAldeas||(p.t!=="hamlet"&&p.t!=="isolated_dwelling"))&&!((p.t==="hamlet"||p.t==="isolated_dwelling")&&p.k>12)}).sort(function(a,b){return (a.d+0.04*a.k)-(b.d+0.04*b.k)}).slice(0,modoCoche?4:8);
+      .filter(function(p){return p.d<=tol&&p.k>0.5&&p.k<=alcance&&(verAldeas||(p.t!=="hamlet"&&p.t!=="isolated_dwelling"))&&!((p.t==="hamlet"||p.t==="isolated_dwelling")&&p.k>12)})
+      .sort(cmpMira).slice(0,modoCoche?4:8);
     for(i=0;i<r.length;i++){
       var v=estadoVis(r[i]);
       if(v===true){vis=r[i];break}
@@ -311,7 +322,7 @@ function pintarYa(){
     $("mejor").style.fontSize=pm?"28px":"28px";
     $("lista").innerHTML=pm?'<div class="it" style="border-left-color:'+COLPK+'"><span style="font-size:17px"><b style="color:'+COLPK+'">▲</b> '+esc(pm.n)+'</span><span>'+Math.round(pm.e).toLocaleString("es-ES")+' m · '+(pm.dk<10?pm.dk.toFixed(1):Math.round(pm.dk))+' km</span></div>':"";
     $("msg").className=(pkEstado==="error"||(!fuera&&PK.length&&!pm&&pan))?"aviso":"";
-    $("msg").textContent=fuera?"Apunta hacia el horizonte con el móvil en vertical.":
+    $("msg").textContent=fuera?"Baja un poco el móvil: apunta hacia la cumbre, no al cielo.":
       pkEstado==="cargando"&&!PK.length?"Descargando los picos de tu zona (radio de 80 km)…":
       pkEstado==="error"&&!PK.length?"No pude descargar los picos (sin conexión o servidor ocupado). Reintentando…":
       !PK.length?"Aún no hay picos cargados.":
@@ -323,9 +334,43 @@ function pintarYa(){
   dibujarSilueta(hdc);
   if(ochoActivo)actOcho();
 }
+// ---- Rumbo: filtro One-Euro ----
+// Antes: media movil fija (alpha 0,2), que suavizaba igual estando parado que girando:
+// dejaba 0,68° de temblor parado y 5,8° de retraso a 90°/s. Con One-Euro el corte sube
+// con la velocidad real del giro, asi que filtra mas parado y casi nada al girar.
+// Constantes medidas con una simulacion del sensor (tests/rumbo.js): 0,11° y 1,5°.
+// El salto aislado de mas de OEF_SALTO grados se descarta salvo que la muestra
+// siguiente lo confirme: asi una interferencia magnetica no arrastra el rumbo.
+var OEF_MIN=1.5,OEF_BETA=0.10,OEF_DCUT=1.0,OEF_SALTO=15,OEF_CONF=8,OEF_HUECO=0.3;
+var smRaw=null,smDx=0,smT=0,smPend=null;
 function setH(n){
-  if(sm===null)sm=n;
-  var d=((n-sm+540)%360)-180; sm=(sm+0.2*d+360)%360; hd=sm; if(Date.now()-tp>100){tp=Date.now();pintar()}
+  n=((n%360)+360)%360;
+  var t=Date.now();
+  if(sm===null||smRaw===null){
+    sm=n;smRaw=n;smDx=0;smT=t;smPend=null;hd=n;
+  }else{
+    var dt=(t-smT)/1000;smT=t;
+    if(dt>OEF_HUECO){
+      // Hueco largo (pantalla apagada, pestaña en segundo plano): no hay nada que filtrar
+      sm=n;smRaw=n;smDx=0;smPend=null;hd=n;
+    }else{
+      dt=Math.max(1/240,dt);
+      var d=((n-sm+540)%360)-180;
+      if(Math.abs(d)>OEF_SALTO){
+        if(smPend===null||Math.abs(((n-smPend+540)%360)-180)>=OEF_CONF){smPend=n}
+        else{sm=n;smRaw=n;smDx=0;smPend=null;hd=sm}
+      }else{
+        smPend=null;
+        var dRaw=((n-smRaw+540)%360)-180;smRaw=n;
+        var aD=1/(1+1/(2*Math.PI*OEF_DCUT*dt));
+        smDx=aD*(dRaw/dt)+(1-aD)*smDx;
+        var cut=OEF_MIN+OEF_BETA*Math.abs(smDx);
+        var a=1/(1+1/(2*Math.PI*cut*dt));
+        sm=(sm+a*d+360)%360;hd=sm;
+      }
+    }
+  }
+  if(t-tp>100){tp=t;pintar()}
 }
 var oriAbs=false,oriN=0,oriNorte=false,oriT0=0;
 function onOri(e){
@@ -499,7 +544,7 @@ function salir(){try{clearTimeout(tTap);tapSel=null;$("toque").style.display="no
   limpiarEtq();pan=null;hzOff=0;hzPrev=null;hzDet=null;dibujarSilueta(0);
   verPicos=false;actAldeasBtn();document.body.classList.remove("picos");$("picosb").classList.remove("act");$("picosb").setAttribute("aria-pressed","false");
   zoom=1;pista=null;capZoom=null;modosFoco=[];capDist=null;clearTimeout(tFoco);$("fdw").className="";$("cam").style.transform="";$("zval").textContent=fmtZoom(1);clearTimeout(tToast);clearTimeout(tCons);$("toast").className="";$("calbtn").classList.remove("pista");$("conf").style.display="none";
-  pos=null;sm=null;oriN=0;oriNorte=false;oriAbs=false;oriT0=0;modoCoche=false;velAlta=0;velBaja=0;rumboGPS=null;pantallaEncendida(false);
+  pos=null;sm=null;smRaw=null;smDx=0;smPend=null;oriN=0;oriNorte=false;oriAbs=false;oriT0=0;modoCoche=false;velAlta=0;velBaja=0;rumboGPS=null;pantallaEncendida(false);
   $("rumbo").textContent="";$("mejor").textContent="";$("lista").innerHTML="";
   $("msg").textContent="Has terminado: cámara, GPS y brújula apagados. Pulsa «Iniciar identificación» para empezar de nuevo.";
 }
@@ -749,7 +794,7 @@ function identificarToque(x,y){
   clearTimeout(tTap);
   var W=innerWidth,H=innerHeight,f=fEff(),best=null,i,p;
   toqueY=y;
-  if(pit<-40||pit>30){tapSel=null;mostrarToque(x,"Apunta hacia el horizonte");tTap=setTimeout(finToque,3000);return}
+  if(pit<-40||pit>(verPicos?55:30)){tapSel=null;mostrarToque(x,verPicos?"Baja un poco el móvil":"Apunta hacia el horizonte");tTap=setTimeout(finToque,3000);return}
   // 1) Lo que ya está dibujado: punto o etiqueta bajo el dedo (el más cercano al toque)
   var bd=1e9;
   for(i=0;i<etqHit.length;i++){
@@ -1148,19 +1193,30 @@ $("picosb").onclick=function(){
   pintar();
 };
 function actAldeasBtn(){var b=$("aldeas");b.disabled=verPicos;b.style.opacity=verPicos?".45":"";var t=verPicos?"No disponible mientras se muestran los picos":verAldeas?"Se ven pueblos y aldeas. Pulsa para ver solo pueblos":"Se ven solo pueblos. Pulsa para ver también las aldeas";b.title=t;b.setAttribute("aria-label","Aldeas: "+t)}
-// Pico bajo la mira: el más cercano en dirección (±3°) que el relieve deja ver
+// Pico bajo la mira: dentro del campo vertical de la camara y lo mas centrado
+// posible en pantalla (distancia angular 2D), no solo el que menos se desvia en
+// horizontal. Asi una cumbre cercana que asoma muy alta no le gana a la que de
+// verdad estas apuntando. La altura aparente lleva la correccion de curvatura.
 function picoMira(pe,hdc){
-  var best=null,bs=1e9,i,k,dd,dk,vv,sc;
+  var best=null,bs=1e9,i,k,dd,dk,vv,sc,el,dv,tol=tolMira();
+  var f=fEff(),vMax=Math.atan(innerHeight*0.5/f)/R+3;
+  var h0=pan?pan.H0:(pos&&typeof pos.altitude==="number"&&isFinite(pos.altitude)?pos.altitude+2:null);
   for(i=0;i<PK.length;i++){
     k=PK[i];
     if(Math.abs(k.la-pe.latitude)>0.75||Math.abs(k.lo-pe.longitude)>0.95)continue;
     dd=Math.abs(envolver(brg(pe.latitude,pe.longitude,k.la,k.lo)-hdc));
-    if(dd>3)continue;
+    if(dd>tol)continue;
     dk=dst(pe.latitude,pe.longitude,k.la,k.lo);
     if(dk<0.5||dk>alcance)continue;
     vv=panVis(k);if(vv===null)vv=dk<=10;
     if(vv!==true)continue;
-    sc=dd-k.e/3000; // a igual dirección, gana el más alto
+    dv=0;
+    if(h0!==null){
+      el=Math.atan2(k.e-h0-Math.pow(dk*1000,2)/14.6e6,dk*1000)/R;
+      dv=Math.abs(el-pit);
+      if(dv>vMax)continue; // ni siquiera cabe en el encuadre vertical
+    }
+    sc=Math.sqrt(dd*dd+0.6*dv*dv)-k.e/10000; // centrado en pantalla; a igualdad, el mas alto
     if(sc<bs){bs=sc;best={n:k.n,la:k.la,lo:k.lo,e:k.e,dk:dk}}
   }
   return best;

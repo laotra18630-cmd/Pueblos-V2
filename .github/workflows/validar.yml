@@ -27,6 +27,10 @@ jobs:
           node --check data/picos.js
           node --check tests/estatico.js
           node --check tests/humo.js
+          node --check tests/rumbo.js
 
       - name: Manifiesto, referencias, service worker y datos
         run: node tests/estatico.js
+
+      - name: Filtro de rumbo y selección de la mira
+        run: node tests/rumbo.js

@@ -79,6 +79,26 @@ solo lo imprescindible.
 - Botón de inicio con `aria-busy` mientras se cargan los datos.
 - Avisos legibles antes de pedir los permisos de cámara, GPS y brújula.
 
+### 2.6 Precisión de la mira
+
+Cuatro cambios, medidos con `tests/rumbo.js` (extrae el código real de `app.js` y lo
+ejecuta con un sensor simulado):
+
+| Pieza | Antes | Ahora | Medición |
+|---|---|---|---|
+| Suavizado del rumbo | EMA fija α 0,2 | One-Euro (1,5 Hz, β 0,10) | temblor parado 0,68° → **0,11°**; retraso a 90°/s 5,8° → **1,5°** |
+| Saltos del sensor | se aceptaban | se descarta el salto aislado de más de 15° salvo que la muestra siguiente lo confirme | +25° aislado: **0,00°** de desvío |
+| Margen de la mira | 3° fijos | 1,5–3° según el error que declara la brújula | ±2° → 1,5°; ±6° → 2,5°; sin dato → 3° |
+| Orden de candidatos | `d + 0,04·km` | `cmpMira`: manda el ángulo, la distancia desempata dentro de 0,25° | a 0,2° y 39 km gana a 0,4° y 1,5 km |
+| Picos | ±3° en horizontal, gana el más alto | campo vertical real y gana el más centrado en pantalla | una cumbre a 30° de altura ya no gana a la que está en la mira |
+
+El One-Euro sube la frecuencia de corte con la velocidad del giro, así que no hay que
+elegir entre temblor y retraso. La elección de picos usa la altura aparente con la misma
+corrección de curvatura que las etiquetas (`e − H0 − d²/14,6·10⁶`), de modo que gana el
+pico más cercano al centro de la pantalla, no el que menos se desvía en horizontal. En
+modo picos se puede apuntar hasta 55° por encima del horizonte (antes 30°), porque una
+cumbre cercana se sale de ese límite.
+
 ---
 
 ## 3. Qué se ha modificado en este repositorio
@@ -122,10 +142,14 @@ Primera carga total: **~1,23 MB gzip** (antes ~1,46 MB).
 
 ## 4. Pendiente / posibles mejoras futuras
 
+- Aplicar la **declinación magnética** (1–3° en España). Hoy el rumbo es respecto al norte
+  magnético; el desfase se aprende en parte con la calibración por GPS, pero solo cuando
+  se circula a más de 18 km/h.
 - Empaquetar los datos en binario + `DecompressionStream` (el motor ya soporta
   `#datosRelieve`); bajaría el HTML a unas decenas de KB.
 - Codificar los pueblos por delta de coordenadas en rejilla (más ganancia que minificar).
-- Tests automáticos del cálculo de rumbo y visibilidad (hoy se comprueban a mano,
-  incluida una carga real en Chrome sin interfaz).
-- Añadir `screenshots` al manifiesto para la ficha de instalación en Android.
+- Tests automáticos de la visibilidad con relieve (hoy se prueba la app real en Chrome).
+- Calibrar el **campo de visión real** de la cámara (hoy se supone 69,4°) para que las
+  etiquetas caigan exactamente sobre el pueblo y el toque sea más fino.
+- Relieve más fino cerca (1° en vez de 2,5–7,5°).
 

@@ -8,6 +8,26 @@ instalar como aplicación (PWA) en Android e iPhone.
 
 ---
 
+## Aplicación Android (APK)
+
+**[Descargar Pueblos-V2-1.0.0.apk](https://github.com/laotra18630-cmd/Pueblos-V2/releases/download/v1.0.0/Pueblos-V2-1.0.0.apk)**
+(1,8 MB · Android 7.0 o superior)
+
+El APK es una **Trusted Web Activity**: abre la misma PWA con Chrome a pantalla
+completa, así que la cámara, el GPS y la brújula se comportan igual que en el navegador.
+Para instalar, descarga el archivo en el móvil y permite la instalación desde esa fuente
+cuando Android lo pregunte.
+
+- Paquete: `io.github.laotra18630cmd.pueblos` · versión 1.0.0 (1)
+- Se compila con Bubblewrap a partir del manifest de la PWA. El proyecto Android
+  (keystore incluido) está en `C:\apppueblos\Pueblos-Android`.
+- Chrome comprueba la firma con
+  <https://laotra18630-cmd.github.io/.well-known/assetlinks.json>, que se publica desde
+  el repositorio raíz `laotra18630-cmd.github.io`. Sin ese archivo la app abriría con la
+  barra de direcciones del navegador.
+
+---
+
 ## Cómo abrirla en local
 
 La cámara, el GPS, la brújula y el service worker **solo funcionan en `https://` o en

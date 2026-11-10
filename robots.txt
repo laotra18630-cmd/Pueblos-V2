@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://laotra18630-cmd.github.io/Pueblos-V2/sitemap.xml

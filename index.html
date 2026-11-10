@@ -7,9 +7,28 @@
 <meta name="description" content="Apunta con el móvil al horizonte y descubre qué pueblo o pico tienes delante.">
 <meta name="theme-color" content="#0b1026">
 <meta name="color-scheme" content="dark">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://laotra18630-cmd.github.io/Pueblos-V2/">
+
 <meta property="og:title" content="¿Qué pueblo es?">
 <meta property="og:description" content="Apunta con el móvil al horizonte y descubre qué pueblo o pico tienes delante.">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="¿Qué pueblo es?">
+<meta property="og:locale" content="es_ES">
+<meta property="og:url" content="https://laotra18630-cmd.github.io/Pueblos-V2/">
+<meta property="og:image" content="https://laotra18630-cmd.github.io/Pueblos-V2/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="¿Qué pueblo es? Apunta al horizonte con el móvil y descubre qué pueblo o pico tienes delante.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="¿Qué pueblo es?">
+<meta name="twitter:description" content="Apunta con el móvil al horizonte y descubre qué pueblo o pico tienes delante.">
+<meta name="twitter:image" content="https://laotra18630-cmd.github.io/Pueblos-V2/og-image.png">
+<meta name="twitter:image:alt" content="¿Qué pueblo es? Apunta al horizonte con el móvil y descubre qué pueblo o pico tienes delante.">
+
+<!-- El relieve se pide a Open-Meteo nada más arrancar: adelanta la conexión TLS -->
+<link rel="preconnect" href="https://api.open-meteo.com" crossorigin>
 
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
@@ -25,6 +44,9 @@
 <link rel="stylesheet" href="styles/portada.css">
 <link rel="stylesheet" href="styles/layout.css">
 <link rel="stylesheet" href="styles/camera.css">
+
+<!-- La base de pueblos se necesita siempre: que empiece a descargarse ya -->
+<link rel="preload" href="data/pueblos.js" as="script">
 </head>
 <body>
 <!-- Capas de cámara y etiquetas: se muestran al activar body.on -->

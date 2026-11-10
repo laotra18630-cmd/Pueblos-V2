@@ -16,3 +16,8 @@ android/
 # Paquetes grandes de referencia
 *.zip
 *.apk
+
+# Dependencias de las pruebas (tests/humo.js)
+node_modules/
+package-lock.json
+package.json

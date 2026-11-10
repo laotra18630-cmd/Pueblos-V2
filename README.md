@@ -128,6 +128,31 @@ Open-Meteo es gratuito para uso no comercial. Límites por IP: 600 peticiones/mi
 
 ---
 
+## Pruebas
+
+Dos niveles, ninguno necesita instalar dependencias para el primero:
+
+```powershell
+node tests/estatico.js
+```
+
+Comprueba el manifiesto, que todas las referencias locales existan, que no haya ids
+duplicados ni CSS/JS en línea, que el service worker solo precargue archivos reales y que
+los datos conserven el formato y el número de entradas. Se ejecuta también en cada push
+(`.github/workflows/validar.yml`).
+
+```powershell
+npm install puppeteer-core
+python -m http.server 8765
+node tests/humo.js http://localhost:8765/
+```
+
+Abre la app en Chrome/Edge con una pantalla de 390×844 y verifica que arranca **sin
+errores de consola**, que carga las 86.359 localidades, que el botón de inicio se habilita
+y que no hay desbordamiento horizontal.
+
+---
+
 ## Créditos
 
 - Pueblos y picos: © colaboradores de [OpenStreetMap](https://www.openstreetmap.org/copyright),

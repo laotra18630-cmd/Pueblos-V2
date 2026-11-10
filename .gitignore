@@ -1,0 +1,18 @@
+# Sistema
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Android / claves de firma (no publicar)
+*.jks
+*.keystore
+android/
+
+# Paquetes grandes de referencia
+*.zip
+*.apk

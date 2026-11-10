@@ -1,0 +1,772 @@
+/* ================= Resultados ================= */
+#extras {
+    margin-top: 18px;
+}
+
+#rumbo {
+    display: inline-block;
+    background: rgba(255, 255, 255, .22);
+    padding: 4px 14px;
+    border-radius: 999px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin: 16px 0 4px;
+}
+
+#mejor {
+    font-size: 34px;
+    font-weight: 700;
+    margin: 6px 0;
+    min-height: 48px;
+    word-break: break-word;
+    background: linear-gradient(90deg, #ffe259, #ff9a9e);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.it {
+    background: rgba(255, 255, 255, .2);
+    border: 0;
+    border-left: 6px solid #ffe259;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin: 6px 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 15px;
+    color: #fff;
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+}
+
+.it:nth-child(2) {
+    border-left-color: #ff6ec4;
+}
+
+.it:nth-child(3) {
+    border-left-color: #7ee8fa;
+}
+
+.it span:last-child {
+    color: #fff;
+    opacity: .85;
+    white-space: nowrap;
+}
+
+#msg {
+    color: #fff;
+    opacity: .9;
+    font-size: 14px;
+    margin-top: 12px;
+    text-align: center;
+}
+
+#msg.aviso {
+    opacity: 1;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(255, 226, 89, .18);
+    border: 1px solid rgba(255, 226, 89, .6);
+}
+
+#brj {
+    font-size: 13px;
+    color: #ffe259;
+    text-align: center;
+    margin-top: 6px;
+}
+
+#info {
+    font-size: 12px;
+    opacity: .85;
+    margin-top: 6px;
+    text-align: center;
+}
+
+/* ================= Estado (GPS / brújula / calibración) ================= */
+#estado {
+    display: none;
+}
+
+body.on #estado {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    margin: 4px 0 2px;
+}
+
+.ch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 44px;
+    padding: 4px 6px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.2;
+    color: #fff;
+    border: 2px solid transparent;
+}
+
+.ch.ok {
+    background: #15803d;
+    border-color: #86efac;
+}
+
+.ch.av {
+    background: #b45309;
+    border-color: #fcd34d;
+}
+
+.ch.mal {
+    background: #b91c1c;
+    border-color: #fecaca;
+}
+
+.ch.n {
+    background: rgba(0, 0, 0, .5);
+    border-color: rgba(255, 255, 255, .55);
+}
+
+/* ================= Diálogos ================= */
+#permisos {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px;
+    color: #fff;
+    background: rgba(5, 7, 20, .96);
+    overflow: auto;
+}
+
+#permisos h2 {
+    margin: 0;
+    font-size: 24px;
+    text-align: center;
+}
+
+#permisos p {
+    max-width: 34ch;
+    margin: 0;
+    text-align: center;
+    color: #dfe6ff;
+    font-size: 15px;
+}
+
+#permisos ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: 34ch;
+    display: grid;
+    gap: 10px;
+}
+
+#permisos li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 16px;
+    line-height: 1.35;
+    background: rgba(255, 255, 255, .1);
+    border: 1px solid rgba(255, 255, 255, .3);
+    border-radius: 14px;
+    padding: 12px;
+}
+
+#permisos .pi {
+    font-size: 28px;
+    line-height: 1;
+}
+
+#permisos button {
+    max-width: 300px;
+    min-height: 56px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+#permok {
+    background: linear-gradient(90deg, #15803d, #0f766e);
+}
+
+#permno {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, .6);
+    box-shadow: none;
+}
+
+#conf {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    text-align: center;
+    padding: 30px;
+    color: #fff;
+    background: rgba(5, 7, 20, .94);
+}
+
+#conf h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+#conf p {
+    max-width: 30ch;
+    color: #dfe6ff;
+    margin: 0 0 6px;
+    font-size: 17px;
+}
+
+#conf button {
+    max-width: 300px;
+    min-height: 56px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+#confno {
+    background: linear-gradient(90deg, #15803d, #0f766e);
+}
+
+#confsi {
+    background: #b91c1c;
+    border: 2px solid #fecaca;
+    box-shadow: none;
+}
+
+#adios {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+    padding: 30px;
+    color: #fff;
+    background:
+        radial-gradient(60% 40% at 12% 0%, rgba(124, 58, 237, .7), transparent 70%),
+        radial-gradient(70% 50% at 50% 100%, rgba(37, 117, 252, .6), transparent 70%),
+        #0b1026;
+}
+
+#adios h2 {
+    margin: 0;
+}
+
+#adios p {
+    max-width: 28ch;
+    color: #dfe6ff;
+    margin: 0 0 10px;
+}
+
+#adios button {
+    max-width: 240px;
+}
+
+.emoji {
+    font-size: 54px;
+}
+
+/* ================= Panel de calibración ================= */
+#cal {
+    display: none;
+    position: fixed;
+    z-index: 15;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: 46vh;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px 16px calc(env(safe-area-inset-bottom, 0px) + 14px);
+    background: rgba(10, 12, 30, .98);
+    color: #fff;
+    border-radius: 22px 22px 0 0;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, .5);
+}
+
+#cal h3 {
+    margin: 0 0 4px;
+    font-size: 17px;
+}
+
+#cal p {
+    font-size: 13px;
+    line-height: 1.35;
+    margin: 0 0 8px;
+    color: #dfe6ff;
+}
+
+#cal select {
+    width: 100%;
+    min-height: 48px;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, .3);
+    background: #1a1d3a;
+    color: #fff;
+    margin-bottom: 6px;
+}
+
+#cal .chk {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 15px;
+    min-height: 44px;
+    margin: 0;
+}
+
+#cal .chk input {
+    width: 22px;
+    height: 22px;
+    flex: none;
+}
+
+.cs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0 6px;
+    font-size: 15px;
+    line-height: 1.3;
+    font-weight: 600;
+}
+
+.cs b {
+    display: inline-flex;
+    flex: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #1b1040;
+    background: #ffe259;
+}
+
+#cal button {
+    margin-top: 0;
+    min-height: 48px;
+    font-size: 16px;
+    padding: 12px 8px;
+}
+
+#cal #calreset,
+#cal #calcerrar {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, .6);
+    box-shadow: none;
+}
+
+#cal #calhor,
+#cal #calgps,
+#cal #calreset {
+    margin-top: 8px;
+    width: 100%;
+}
+
+#calok {
+    background: linear-gradient(90deg, #15803d, #0f766e);
+    font-weight: 800;
+    font-size: 17px;
+}
+
+#calgps {
+    background: linear-gradient(90deg, #1d4ed8, #0f766e);
+}
+
+#calhor {
+    background: linear-gradient(90deg, #0f766e, #1d4ed8);
+}
+
+.fila2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+#calst {
+    font-size: 14px;
+    line-height: 1.4;
+    color: #ffe259;
+    margin: 8px 0 0;
+    min-height: 20px;
+}
+
+#ocho {
+    text-align: center;
+}
+
+#ochot {
+    font-size: 15px;
+    line-height: 1.4;
+    margin: 6px 0 10px;
+    color: #ffe259;
+}
+
+#cal.menu {
+    max-height: 74vh;
+}
+
+#cal .cv {
+    display: none;
+}
+
+#cal .cm {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+    width: 100%;
+    margin-top: 8px;
+    min-height: 64px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .12);
+    border: 1px solid rgba(255, 255, 255, .4);
+    box-shadow: none;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+#cal .cm small {
+    display: block;
+    font-weight: 400;
+    font-size: 13px;
+    opacity: .92;
+}
+
+#cal .cm .ic {
+    font-size: 26px;
+    line-height: 1;
+    flex: none;
+}
+
+#cal .cback {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, .6);
+    box-shadow: none;
+    margin-bottom: 8px;
+    min-height: 44px;
+    padding: 8px 14px;
+    width: auto;
+}
+
+#cal .nota {
+    font-size: 13px;
+    line-height: 1.4;
+    color: #dfe6ff;
+    margin: 8px 0 0;
+}
+
+/* ================= Guía ================= */
+#guia {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 32;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: calc(env(safe-area-inset-top, 0px) + 18px) 18px calc(env(safe-area-inset-bottom, 0px) + 18px);
+    color: #fff;
+    background: rgba(5, 7, 20, .97);
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+#guia h2 {
+    margin: 0;
+    font-size: 24px;
+    text-align: center;
+}
+
+#guia h3 {
+    margin: 8px 0 0;
+    font-size: 17px;
+    color: #ffe259;
+    width: 100%;
+    max-width: 38ch;
+}
+
+#guia ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: 38ch;
+    width: 100%;
+    display: grid;
+    gap: 8px;
+}
+
+#guia li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 15px;
+    line-height: 1.35;
+    background: rgba(255, 255, 255, .1);
+    border: 1px solid rgba(255, 255, 255, .3);
+    border-radius: 14px;
+    padding: 10px 12px;
+}
+
+#guia .pi {
+    font-size: 24px;
+    line-height: 1;
+    flex: none;
+    width: 30px;
+    text-align: center;
+}
+
+#guia button {
+    max-width: 300px;
+    min-height: 56px;
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 6px;
+    flex: none;
+    background: linear-gradient(90deg, #15803d, #0f766e);
+}
+
+/* ================= Añadir un lugar ================= */
+#anadir {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 36;
+    flex-direction: column;
+    align-items: center;
+    padding: calc(env(safe-area-inset-top, 0px) + 14px) 14px calc(env(safe-area-inset-bottom, 0px) + 18px);
+    color: #fff;
+    background: rgba(5, 7, 20, .97);
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+#anadir .caja {
+    width: 100%;
+    max-width: 42ch;
+    display: grid;
+    gap: 12px;
+}
+
+#anadir h2 {
+    margin: 0;
+    font-size: 22px;
+    text-align: center;
+}
+
+#anadir h3 {
+    margin: 6px 0 0;
+    font-size: 16px;
+    color: #ffe259;
+}
+
+#anadir p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #dfe6ff;
+}
+
+#anadir label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #dfe6ff;
+}
+
+#anadir input[type="text"],
+#anadir input[type="number"],
+#anadir select {
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 12px;
+    font: inherit;
+    font-size: 16px;
+    color: #fff;
+    background: #1a1d3a;
+    border: 1px solid rgba(255, 255, 255, .3);
+    border-radius: 12px;
+}
+
+#anadir input::placeholder {
+    color: rgba(255, 255, 255, .45);
+}
+
+#anadir .fila {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+#anadir .oculto {
+    display: none !important;
+}
+
+#anadir .seg {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+#anadir .seg button {
+    min-height: 48px;
+    padding: 8px 6px;
+    font-size: 14px;
+    border: 2px solid rgba(255, 255, 255, .45);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .1);
+    box-shadow: none;
+}
+
+#anadir .seg button.on {
+    background: #1d4ed8;
+    border-color: #bfdbfe;
+}
+
+#anadir #ausar,
+#anadir #aqui {
+    margin-top: 8px;
+    min-height: 46px;
+    font-size: 15px;
+    background: rgba(255, 255, 255, .14);
+    border: 2px solid rgba(255, 255, 255, .45);
+    box-shadow: none;
+}
+
+#anadir .btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+#anadir #aadd {
+    background: linear-gradient(90deg, #15803d, #0f766e);
+    font-weight: 800;
+}
+
+#anadir #acerra {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, .6);
+    box-shadow: none;
+}
+
+#anadir #aest {
+    min-height: 20px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #ffe259;
+}
+
+#anadir #aosm {
+    min-height: 46px;
+    font-size: 15px;
+    background: rgba(255, 255, 255, .1);
+    border: 2px solid rgba(255, 255, 255, .35);
+    box-shadow: none;
+}
+
+#anadir #aosmres {
+    font-size: 13px;
+    line-height: 1.4;
+    color: #dfe6ff;
+}
+
+#anadir #alistac {
+    border-top: 1px solid rgba(255, 255, 255, .18);
+    padding-top: 10px;
+}
+
+#anadir .lista {
+    display: grid;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+#anadir .item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    font-size: 14px;
+    line-height: 1.25;
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: 10px;
+}
+
+#anadir .item span {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#anadir .item small {
+    display: block;
+    font-weight: 400;
+    font-size: 12px;
+    color: #cbd5ff;
+}
+
+#anadir .item button {
+    flex: none;
+    width: 40px;
+    min-height: 40px;
+    padding: 0;
+    border-radius: 10px;
+    background: rgba(185, 28, 28, .85);
+    border: 1px solid #fecaca;
+    box-shadow: none;
+    font-size: 18px;
+}
+
+#anadir .nada {
+    font-size: 13px;
+    color: #aab4d4;
+}
+
+#anadir #aborrarosm {
+    margin-top: 10px;
+    min-height: 44px;
+    font-size: 14px;
+    background: rgba(185, 28, 28, .35);
+    border: 1px solid #fecaca;
+    box-shadow: none;
+}
+
+#anadir #aborrarosm[hidden] {
+    display: none;
+}
